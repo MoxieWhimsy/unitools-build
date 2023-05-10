@@ -6,6 +6,10 @@ namespace UniTools.Build
     [CustomPropertyDrawer(typeof(PathProperty))]
     public sealed class PathPropertyDrawer : PropertyDrawer
     {
+        private const int TypeMaxWidth = 80;
+        private const int ContentPreferredWidth = 240;
+        private const float PreferredWidth = TypeMaxWidth + ContentPreferredWidth; 
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             // Using BeginProperty / EndProperty on the parent property means that
@@ -19,10 +23,13 @@ namespace UniTools.Build
             int indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            const int shift = 200;
+            var typeWidth = position.width >= PreferredWidth
+                ? TypeMaxWidth
+                : TypeMaxWidth / PreferredWidth * position.width;
+            var contentWidth = position.width - typeWidth;
             // Calculate rects
-            Rect firstRect = new Rect(position.x, position.y, shift, position.height);
-            Rect secondRect = new Rect(position.x + shift, position.y, position.width - shift, position.height);
+            Rect firstRect = new Rect(position.x, position.y, contentWidth, position.height);
+            Rect secondRect = new Rect(position.x + contentWidth, position.y, typeWidth, position.height);
 
             SerializedProperty typeProperty = property.FindPropertyRelative("m_type");
 
